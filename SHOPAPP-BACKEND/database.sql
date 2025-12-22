@@ -81,7 +81,6 @@ CREATE TABLE orders(
     address VARCHAR(200),
     note VARCHAR(100) DEFAULT "",
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(20),
     total_money FLOAT CHECK (total_money >= 0)
 );
 
@@ -96,6 +95,10 @@ ALTER TABLE orders ADD COLUMN is_active TINYINT(1);
 -- Trạng thái đơn hàng chỉ được phép nhận "một số giá trị cụ thể"
 ALTER TABLE orders ADD COLUMN status ENUM('pending', 'processing', 'shipped', 'delivered', 'canceled')
 COMMENT "Trạng thái đơn hàng"
+
+ALTER TABLE orders 
+MODIFY COLUMN status ENUM('pending', 'processing', 'shipped', 'delivered', 'canceled') 
+COMMENT 'Trạng thái đơn hàng';
 
 CREATE TABLE order_details(
     id INT PRIMARY KEY AUTO_INCREMENT,
