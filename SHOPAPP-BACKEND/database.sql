@@ -19,6 +19,15 @@ CREATE TABLE users(
 -- Lưu ý:
 -- "is_active" để tinint vì để boolean khi đổi cơ sở dữ liệu khác đôi khi sẽ không hỗ trợ boolean
 
+ALTER TABLE users ADD COLUMN role_id INT;
+
+CREATE TABLE roles(
+    id INT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL
+);
+
+ALTER TABLE users ADD FOREIGN KEY (role_id) REFERENCES roles(id);
+
 CREATE TABLE tokens(
     id INT PRiMARY KEY AUTO_INCREMENT,
     token VARCHAR(255) UNIQUE NOT NULL,
@@ -60,3 +69,43 @@ CREATE TABLE products(
     category_id INT,
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
+
+-- Đặt hàng - orders
+CREATE TABLE orders(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    fullname VARCHAR(100) DEFAULT "",
+    email VARCHAR(100) DEFAULT "",
+    phone_number VARCHAR(20) NOT NULL,
+    address VARCHAR(200),
+    note VARCHAR(100) DEFAULT "",
+    order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20),
+    total_money FLOAT CHECK (total_money >= 0)
+);
+
+ALTER TABLE orders ADD COLUMN `shipping_method` VARCHAR(100);
+ALTER TABLE orders ADD COLUMN `shipping_address` VARCHAR(100);
+ALTER TABLE orders ADD COLUMN `shipping_date` DATE;
+ALTER TABLE orders ADD COLUMN `tracking_number` VARCHAR(100);
+ALTER TABLE orders ADD COLUMN `payment_method` VARCHAR(100);
+
+-- xóa 1 đơn hàng => xóa mềm => thêm trường active
+ALTER TABLE orders ADD COLUMN is_active TINYINT(1);
+-- Trạng thái đơn hàng chỉ được phép nhận "một số giá trị cụ thể"
+ALTER TABLE orders ADD COLUMN status ENUM('pending', 'processing', 'shipped', 'delivered', 'canceled')
+COMMENT "Trạng thái đơn hàng"
+
+CREATE TABLE order_details(
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    product_id INT,
+    FOREIGN KEY (product_id) REFERENCES products(id),
+    price FLOAT CHECK (price >= 0),
+    number_of_products INT CHECK (number_of_products > 0),
+    total_money FLOAT CHECK (total_money >= 0),
+    color VARCHAR(20) DEFAULT ""
+);
+
