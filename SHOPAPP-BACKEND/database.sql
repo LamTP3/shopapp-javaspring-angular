@@ -79,6 +79,8 @@ CREATE TABLE product_images(
     image_url VARCHAR(300)
 );
 
+ALTER TABLE product_images ADD image_url VARCHAR(300);
+
 -- Đặt hàng - orders
 CREATE TABLE orders(
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -104,6 +106,12 @@ ALTER TABLE orders ADD COLUMN is_active TINYINT(1);
 -- Trạng thái đơn hàng chỉ được phép nhận "một số giá trị cụ thể"
 ALTER TABLE orders ADD COLUMN status ENUM('pending', 'processing', 'shipped', 'delivered', 'canceled')
 COMMENT "Trạng thái đơn hàng"
+
+ALTER TABLE orders 
+MODIFY COLUMN status ENUM('pending', 'processing', 'shipped', 'delivered', 'canceled')
+DEFAULT 'pending'
+NOT NULL
+COMMENT "Trạng thái đơn hàng";
 
 ALTER TABLE orders 
 MODIFY COLUMN status ENUM('pending', 'processing', 'shipped', 'delivered', 'canceled') 
