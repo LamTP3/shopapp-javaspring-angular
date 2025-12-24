@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +33,14 @@ public class ProductController {
                 List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            MultipartFile file = productDTO.getFile();
-            if (file != null) {
+            List<MultipartFile> files = productDTO.getFiles();
+            files = files == null ? new ArrayList<MultipartFile>() : files;
+            for (MultipartFile file : files) {
+                if (file.getSize() == 0) {
+                    continue; // nếu getSize = 0 nhảy sang vòng lặp sau vì file không có ảnh
+                }
+
+                // Kiểm tra kích thước và định dạng file
                 if (file.getSize() > 10 * 1024 * 1024) { // Kích thức > 10MB
                     return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("File is to large: Maximum file is 10MB");
                 }
@@ -44,6 +51,7 @@ public class ProductController {
                 // Lưu file và cập nhập thumbnail trong DTO
                 String filename = storeFile(file);
                 // lưu vào đối tượng product trong DB => sẽ làm sau
+                //Lưu vào bảng product_images
             }
             return ResponseEntity.ok("Test create" + productDTO);
         } catch (Exception e) {
