@@ -20,21 +20,27 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("app/v1/products")
+@RequestMapping("api/v1/products")
 public class ProductController {
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     // Nếu tham số truyền vào là 1 object thì sao ? => Data Transfer Object = Request Object
-    public ResponseEntity<?> createProduct(@Valid @ModelAttribute ProductDTO productDTO,
-//                                           @RequestPart("file") MultipartFile file,
-                                           BindingResult result) {
+    public ResponseEntity<?> createProduct(
+            @Valid @ModelAttribute ProductDTO productDTO,
+            //@RequestPart("file") MultipartFile file,
+            BindingResult result
+    ) {
         try {
             if (result.hasErrors()) {
-                List<String> errorMessages = result.getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
+                List<String> errorMessages = result
+                        .getFieldErrors()
+                        .stream()
+                        .map(FieldError::getDefaultMessage)
+                        .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
             List<MultipartFile> files = productDTO.getFiles();
-            files = files == null ? new ArrayList<MultipartFile>() : files;
+            files = files == null ? new ArrayList<>() : files;
             for (MultipartFile file : files) {
                 if (file.getSize() == 0) {
                     continue; // nếu getSize = 0 nhảy sang vòng lặp sau vì file không có ảnh
@@ -57,7 +63,6 @@ public class ProductController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
 
     private String storeFile(MultipartFile file) throws IOException {
@@ -78,7 +83,10 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<String> getAllProducts(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+    public ResponseEntity<String> getAllProducts(
+            @RequestParam("page") int page,
+            @RequestParam("limit") int limit
+    ) {
         return ResponseEntity.ok(String.format("getAllProducts, page = %d, limit = %d", page, limit));
     }
 
