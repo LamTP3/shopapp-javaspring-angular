@@ -92,7 +92,8 @@ CREATE TABLE orders(
     address VARCHAR(200),
     note VARCHAR(100) DEFAULT "",
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    total_money FLOAT CHECK (total_money >= 0)
+    -- total_money FLOAT CHECK (total_money >= 0)
+    total_money INT CHECK (total_money >= 0)
 );
 
 ALTER TABLE orders ADD COLUMN `shipping_method` VARCHAR(100);
@@ -100,9 +101,10 @@ ALTER TABLE orders ADD COLUMN `shipping_address` VARCHAR(100);
 ALTER TABLE orders ADD COLUMN `shipping_date` DATE;
 ALTER TABLE orders ADD COLUMN `tracking_number` VARCHAR(100);
 ALTER TABLE orders ADD COLUMN `payment_method` VARCHAR(100);
-
+ALTER TABLE orders ADD COLUMN payment_date DATETIME null;
+ALTER TABLE orders ADD COLUMN payment_status VARCHAR(255) null;
 -- xóa 1 đơn hàng => xóa mềm => thêm trường active
-ALTER TABLE orders ADD COLUMN is_active TINYINT(1);
+ALTER TABLE orders ADD COLUMN active TINYINT(1);
 -- Trạng thái đơn hàng chỉ được phép nhận "một số giá trị cụ thể"
 ALTER TABLE orders ADD COLUMN status ENUM('pending', 'processing', 'shipped', 'delivered', 'canceled')
 COMMENT "Trạng thái đơn hàng"
