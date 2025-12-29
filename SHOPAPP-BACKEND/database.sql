@@ -43,7 +43,7 @@ CREATE TABLE tokens(
 CREATE TABLE social_accounts(
     `id` INT PRIMARY KEY AUTO_INCREMENT,
     `provider` VARCHAR(50) NOT NULL COMMENT 'e.g., facebook, google',
-    `provider__id` VARCHAR(50) NOT NULL,
+    `provider_id` VARCHAR(50) NOT NULL,
     `email` VARCHAR(150) NOT NULL COMMENT 'Email tài khoản xã hội',
     `name` VARCHAR(100) NOT NULL COMMENT 'Tên người dùng',
     `user_id` INT,
