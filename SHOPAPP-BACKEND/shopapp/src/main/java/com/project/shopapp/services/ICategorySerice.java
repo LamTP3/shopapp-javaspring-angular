@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ICategorySerice {
 
-    Category createCategory(CategoryDTO category);
+    Category createCategory(CategoryDTO categoryDTO);
 
     Category getCategoryById(Long id);
 

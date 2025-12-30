@@ -2,7 +2,7 @@ package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.CategoryDTO;
 import com.project.shopapp.models.Category;
-import com.project.shopapp.services.CategoryService;
+import com.project.shopapp.services.ICategorySerice;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import java.util.List;
 //Depdendency Injection
 @RequiredArgsConstructor
 public class CategoryController {
-    private final CategoryService categoryService;
+    private final ICategorySerice categoryService;
 
     // Hiển thị tất cả các categories
     @GetMapping("")
