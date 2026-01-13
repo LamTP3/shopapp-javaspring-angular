@@ -1,7 +1,12 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.ProductDTO;
+import com.project.shopapp.dtos.ProductImageDTO;
+import com.project.shopapp.models.Product;
+import com.project.shopapp.models.ProductImage;
+import com.project.shopapp.services.IProductService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +26,9 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.prefix}/products")
+@RequiredArgsConstructor
 public class ProductController {
+    private final IProductService productService;
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     // Nếu tham số truyền vào là 1 object thì sao ? => Data Transfer Object = Request Object
@@ -39,6 +46,7 @@ public class ProductController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
+            Product newProduct = productService.createProduct(productDTO);
             List<MultipartFile> files = productDTO.getFiles();
             files = files == null ? new ArrayList<>() : files;
             for (MultipartFile file : files) {
@@ -56,8 +64,13 @@ public class ProductController {
                 }
                 // Lưu file và cập nhập thumbnail trong DTO
                 String filename = storeFile(file);
-                // lưu vào đối tượng product trong DB => sẽ làm sau
-                //Lưu vào bảng product_images
+                // lưu vào đối tượng product trong DB
+                ProductImage productImage = productService.createProductImage(
+                        newProduct.getId(),
+                        ProductImageDTO.builder()
+                                .imageUrl(filename)
+                                .build()
+                );
             }
             return ResponseEntity.ok("Test create" + productDTO);
         } catch (Exception e) {
