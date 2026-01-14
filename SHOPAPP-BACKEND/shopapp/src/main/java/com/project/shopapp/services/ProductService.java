@@ -38,8 +38,8 @@ public class ProductService implements IProductService {
                 .description(productDTO.getDescription())
                 .category(existingCategory)
                 .build();
-        productRepository.save(newProduct);
-        return newProduct;
+
+        return productRepository.save(newProduct);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ProductService implements IProductService {
             ProductImageDTO productImageDTO
     ) throws Exception {
         Product existingProduct = productRepository.
-                findById(productImageDTO.getProductId())
+                findById(productId)
                 .orElseThrow(() ->
                         new DataNotFoundException(
                                 "Cannot find product with id: " + productImageDTO.getProductId()));
@@ -106,8 +106,9 @@ public class ProductService implements IProductService {
                 .build();
         //Ko cho insert quá 5 ảnh cho 1 sản phẩm
         int size = productImageRepository.findByProductId(productId).size();
-        if (size >= 5) {
-            throw new InvalidParamException("Number of images must be <= 5");
+        if (size >= ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
+            throw new InvalidParamException("Number of images must be <= "
+                    + ProductImage.MAXIMUM_IMAGES_PER_PRODUCT);
         }
         return productImageRepository.save(newProductImage);
     }
