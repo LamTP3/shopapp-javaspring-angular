@@ -30,10 +30,11 @@ import java.util.UUID;
 public class ProductController {
     private final IProductService productService;
 
-    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping("")
     // Nếu tham số truyền vào là 1 object thì sao ? => Data Transfer Object = Request Object
     public ResponseEntity<?> createProduct(
-            @Valid @ModelAttribute ProductDTO productDTO,
+            @Valid @RequestBody ProductDTO productDTO,
+            //@ModelAttribute("files") List<MultipartFile> files,
             //@RequestPart("file") MultipartFile file,
             BindingResult result
     ) {
@@ -47,8 +48,22 @@ public class ProductController {
                 return ResponseEntity.badRequest().body(errorMessages);
             }
             Product newProduct = productService.createProduct(productDTO);
-            List<MultipartFile> files = productDTO.getFiles();
+
+            return ResponseEntity.ok(newProduct);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadImages(
+            @PathVariable("id") Long productId,
+            @ModelAttribute("files") List<MultipartFile> files
+    ) {
+        try {
+            Product existingProduct = productService.getProductById(productId);
             files = files == null ? new ArrayList<>() : files;
+            List<ProductImage> productImages = new ArrayList<>();
             for (MultipartFile file : files) {
                 if (file.getSize() == 0) {
                     continue; // nếu getSize = 0 nhảy sang vòng lặp sau vì file không có ảnh
@@ -66,13 +81,14 @@ public class ProductController {
                 String filename = storeFile(file);
                 // lưu vào đối tượng product trong DB
                 ProductImage productImage = productService.createProductImage(
-                        newProduct.getId(),
+                        existingProduct.getId(),
                         ProductImageDTO.builder()
                                 .imageUrl(filename)
                                 .build()
                 );
+                productImages.add(productImage);
             }
-            return ResponseEntity.ok("Test create" + productDTO);
+            return ResponseEntity.ok().body(productImages);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
