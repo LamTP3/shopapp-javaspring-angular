@@ -12,7 +12,6 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class ProductDTO {
     @NotBlank(message = "Title is required")
     @Size(min = 3, max = 200, message = "Title must be between 3 and 200 characters")
