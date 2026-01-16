@@ -197,4 +197,17 @@ public class ProductController {
         }
         return ResponseEntity.ok("Fake products generated successfully");
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody ProductDTO productDTO
+    ) {
+        try {
+            Product updatedProduct = productService.updateProduct(id, productDTO);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
