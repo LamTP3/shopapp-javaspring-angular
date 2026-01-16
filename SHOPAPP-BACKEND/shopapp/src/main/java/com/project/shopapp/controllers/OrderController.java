@@ -39,21 +39,34 @@ public class OrderController {
         }
     }
 
-    @GetMapping({"{user_id}"})
-    public ResponseEntity<?> getOrders(
-            @Valid @PathVariable("user_id") long userId
+    @GetMapping({"/{id}"})
+    public ResponseEntity<?> getOrder(
+            @Valid @PathVariable("id") long orderId
     ) {
         try {
-            return ResponseEntity.ok("Get orders by user id successfully");
+            Order existingOrder = orderService.getOrder(orderId);
+            return ResponseEntity.ok(existingOrder);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @PutMapping("{id}")
+    @GetMapping({"/user/{user_id}"})
+    public ResponseEntity<?> getOrders(
+            @Valid @PathVariable("user_id") long userId
+    ) {
+        try {
+            List<Order> orders = orderService.findByUserId(userId);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
     public ResponseEntity<?> updateOrder(
-            @PathVariable("id") long id,
-            @RequestBody @Valid OrderDTO orderDTO,
+            @Valid @PathVariable long id,
+            @Valid @RequestBody OrderDTO orderDTO,
             BindingResult result
     ) {
         try {
@@ -64,18 +77,20 @@ public class OrderController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            return ResponseEntity.ok("Update Order successfully");
+            Order order = orderService.updateOrder(id, orderDTO);
+            return ResponseEntity.ok(order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrder(
             @PathVariable("id") long id
     ) {
         try {
             // xóa mềm => cập nhập trường isActive = false
+            orderService.deleteOrder(id);
             return ResponseEntity.ok("Delete Order successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
