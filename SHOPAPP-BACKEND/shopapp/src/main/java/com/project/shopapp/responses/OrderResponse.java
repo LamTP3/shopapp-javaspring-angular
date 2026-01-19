@@ -9,8 +9,8 @@ import java.time.LocalDate;
 import java.util.Date;
 
 @AllArgsConstructor
-@Builder
 @NoArgsConstructor
+@Builder
 public class OrderResponse extends BaseResponse {
     private Long id;
 

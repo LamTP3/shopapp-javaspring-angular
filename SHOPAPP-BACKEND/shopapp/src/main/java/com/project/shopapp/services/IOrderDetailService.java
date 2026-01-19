@@ -11,9 +11,9 @@ public interface IOrderDetailService {
 
     OrderDetail getOrderDetail(Long id) throws DataNotFoundException;
 
-    OrderDetail updateOrderDetail(Long id, OrderDetailDTO newOrderDetailData);
+    OrderDetail updateOrderDetail(Long id, OrderDetailDTO newOrderDetailData) throws DataNotFoundException;
 
-    void deleteOrderDetail(Long id);
+    void deleteById(Long id);
 
     List<OrderDetail> findByOrderId(Long orderId);
 }
