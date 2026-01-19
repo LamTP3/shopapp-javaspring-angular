@@ -1,7 +1,10 @@
 package com.project.shopapp.controllers;
 
 import com.project.shopapp.dtos.OrderDetailDTO;
+import com.project.shopapp.models.OrderDetail;
+import com.project.shopapp.services.OrderDetailService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -11,12 +14,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/order_details")
+@RequiredArgsConstructor
 //@Validated
 public class OrderDetailController {
+    private final OrderDetailService orderDetailService;
+
     // Thêm mới 1 order detail
     @PostMapping("")
     public ResponseEntity<?> createOrderDetail(
-            @Valid @RequestBody OrderDetailDTO newOrderDetailDTO,
+            @Valid @RequestBody OrderDetailDTO orderDetailDTO,
             BindingResult result
     ) {
         try {
@@ -27,7 +33,8 @@ public class OrderDetailController {
                         .toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
-            return ResponseEntity.ok("Create Order Detail successfully");
+            OrderDetail newOrderDetail =  orderDetailService.createOrderDetail(orderDetailDTO)
+            return ResponseEntity.ok(newOrderDetail);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -38,7 +45,8 @@ public class OrderDetailController {
             @Valid @PathVariable("id") long id
     ) {
         try {
-            return ResponseEntity.ok("Get Order Detail successfully");
+            OrderDetail orderDetail =  orderDetailService.getOrderDetail(id);
+            return ResponseEntity.ok(orderDetail);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -50,7 +58,8 @@ public class OrderDetailController {
             @Valid @PathVariable("order_id") long orderId
     ) {
         try {
-            return ResponseEntity.ok("Get Order Details with order id = " + orderId + " successfully");
+            List<OrderDetail> orderDetails = orderDetailService.findByOrderId(orderId);
+            return ResponseEntity.ok(orderDetails);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
