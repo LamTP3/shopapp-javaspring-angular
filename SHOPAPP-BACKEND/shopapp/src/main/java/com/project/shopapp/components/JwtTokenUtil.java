@@ -1,16 +1,19 @@
 package com.project.shopapp.components;
 
+import com.project.shopapp.exceptions.InvalidParamException;
 import com.project.shopapp.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,9 +27,10 @@ public class JwtTokenUtil {
     @Value("${jwt.secretKey}")
     private String secretKey;
 
-    public String generateToken(User user) {
+    public String generateToken(User user) throws Exception {
         // properties => claims
         Map<String, Object> claims = new HashMap<>();
+//        this.generateSecretKey();
         claims.put("phoneNumber", user.getPhoneNumber());
         try {
             String token = Jwts.builder()
@@ -38,14 +42,22 @@ public class JwtTokenUtil {
             return token;
         } catch (Exception e) {
             //  you can "inject" Logger, instead of using System.out.println
-            System.out.println("Cannot create jwr token, error: " + e.getMessage());
-            return null;
+            throw new InvalidParamException("Cannot create jwr token, error: " + e.getMessage());
+            // return null;
         }
     }
 
     private Key getSignInKey() {
         byte[] bytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(bytes);
+    }
+
+    private String generateSecretKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] keyBytes = new byte[32]; // 256 bits
+        random.nextBytes(keyBytes);
+        String secretKey = Encoders.BASE64.encode(keyBytes);
+        return secretKey;
     }
 
     public Claims extractAllClaims(String token) {

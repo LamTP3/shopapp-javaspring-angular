@@ -33,6 +33,7 @@ public class UserService implements IUserService {
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
             throw new DataIntegrityViolationException("Phone number already exists");
         }
+        // convert UserDTO to User entity
         User newUser = User.builder()
                 .fullName(userDTO.getFullName())
                 .phoneNumber(userDTO.getPhoneNumber())
@@ -54,7 +55,6 @@ public class UserService implements IUserService {
             String encodedPassword = passwordEncoder.encode(password);
             newUser.setPassword(encodedPassword);
         }
-        newUser.setPassword(null);
         return userRepository.save(newUser);
     }
 
@@ -75,7 +75,8 @@ public class UserService implements IUserService {
         }
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 phoneNumber,
-                password
+                password,
+                existingUser.getAuthorities()
         );
         //authenticate with Java Spring Security
         authenticationManager.authenticate(authenticationToken);
