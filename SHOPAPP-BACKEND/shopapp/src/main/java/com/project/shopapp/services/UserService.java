@@ -3,6 +3,7 @@ package com.project.shopapp.services;
 import com.project.shopapp.components.JwtTokenUtil;
 import com.project.shopapp.dtos.UserDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
+import com.project.shopapp.exceptions.PermissionDenyException;
 import com.project.shopapp.models.Role;
 import com.project.shopapp.models.User;
 import com.project.shopapp.repositories.RoleRepository;
@@ -27,11 +28,16 @@ public class UserService implements IUserService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public User createUser(UserDTO userDTO) throws DataNotFoundException {
+    public User createUser(UserDTO userDTO) throws Exception {
         String phoneNumber = userDTO.getPhoneNumber();
         //Kiểm tra xem s điện thoại đã tồn tại hay chưa
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
             throw new DataIntegrityViolationException("Phone number already exists");
+        }
+        Role role = roleRepository.findById(userDTO.getRoleId())
+                .orElseThrow(() -> new DataNotFoundException("Role not found with id: " + userDTO.getRoleId()));
+        if (role.getName().toUpperCase().equals(Role.ADMIN)) {
+            throw new PermissionDenyException("You cannot register as ADMIN role");
         }
         // convert UserDTO to User entity
         User newUser = User.builder()
@@ -43,10 +49,6 @@ public class UserService implements IUserService {
                 .facebookAccountId(userDTO.getFacebookAccountId())
                 .googleAccountId(userDTO.getGoogleAccountId())
                 .build();
-//        Role role = roleRepository.findById(userDTO.getRoleId())
-//                .orElseThrow(() -> new DataIntegrityViolationException("Role not found with id: " + userDTO.getRoleId()));
-        Role role = roleRepository.findById(userDTO.getRoleId())
-                .orElseThrow(() -> new DataNotFoundException("Role not found with id: " + userDTO.getRoleId()));
         newUser.setRole(role);
 
         // Kiểm tra nếu có accountId, không yêu cầu mật khẩu
