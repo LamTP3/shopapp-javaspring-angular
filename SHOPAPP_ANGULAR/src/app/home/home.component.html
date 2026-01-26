@@ -4,6 +4,97 @@
         color: #ffffff;
         padding: 20px;
     }
+
+    .search-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .product-category {
+        width: 200px;
+    }
+
+    .search-input {
+        width: 300px;
+        background-color: rgb(19, 23, 42);
+        margin-right: 10px;
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #ffffff;
+    }
+
+    .form-control {
+        background-color: transparent;
+        color: #ffffff;
+    }
+
+    .form-control::placeholder {
+        /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: rgba(255, 255, 255, 0.5);
+        opacity: 1;
+        /* Firefox */
+    }
+
+    .form-control:-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-control::-ms-input-placeholder {
+        /* Microsoft Edge */
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-control option {
+        background-color: rgb(19, 23, 42);
+        color: #ffffff;
+    }
+
+    .product-item {
+        background-color: rgb(19, 23, 42);
+        border: 1px solid rgb(35, 39, 61);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .product-image {
+        width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .product-name {
+        color: #ffffff;
+    }
+
+    .product-description {
+        color: rgb(173, 178, 203);
+    }
+
+    .product-warranty {
+        color: rgb(242, 126, 212);
+    }
+
+    .product-price {
+        color: #ffffff;
+    }
+
+    .product-rating i {
+        color: #ffd700;
+        margin-top: 10px;
+    }
+
+    .product-action {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .space-x {
+        margin: 0 5px;
+    }
 </style>
 <div class="container">
     <div class="intro-section">
@@ -11,5 +102,110 @@
         <p> Trang này là trang chủ của ứng dụng.</p>
         <p> Bạn có thể chọn xem sản phẩm và mua hàng tại đây</p>
     </div>
-    <!--Đoạn này là 1 ô search bõ bên trái , 1 combobox phía bên phải -->
+    <div class="search-box">
+        <input type="text" class="form-control search-input" placeholder="Tìm sản phầm">
+        <select class="form-control product-category">
+            <option selected disabled hidden>Chọn danh mục</option>
+            <option>Đồ điện tử</option>
+            <option>Đồ gia dụng</option>
+            <option>Thời trang</option>
+            <option>Đồ chơi</option>
+        </select>
+    </div>
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="product-item">
+                <img src="https://images.pexels.com/photos/285814/pexels-photo-285814.jpeg" alt="Product Image"
+                    class="product-image" />
+                <h3 class="product-name">Sản phẩm 1</h3>
+                <p class="product-description">Mô tả ngắn về sản phẩm 1.</p>
+                <p class="product-warranty">Bảo hành: 12 tháng</p>
+                <p class="product-price">Giá: <del> 200.000 VND</del> 100.000 VND</p>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <div class="product-action">
+                    <button class="btn btn-primary">Thêm vào giỏ hàng</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>d
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="product-item">
+                <img src="https://images.pexels.com/photos/285814/pexels-photo-285814.jpeg" alt="Product Image"
+                    class="product-image" />
+                <h3 class="product-name">Sản phẩm 1</h3>
+                <p class="product-description">Mô tả ngắn về sản phẩm 1.</p>
+                <p class="product-warranty">Bảo hành: 12 tháng</p>
+                <p class="product-price">Giá: <del> 200.000 VND</del> 100.000 VND</p>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <div class="product-action">
+                    <button class="btn btn-primary">Thêm vào giỏ hàng</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="product-item">
+                <img src="https://images.pexels.com/photos/285814/pexels-photo-285814.jpeg" alt="Product Image"
+                    class="product-image" />
+                <h3 class="product-name">Sản phẩm 1</h3>
+                <p class="product-description">Mô tả ngắn về sản phẩm 1.</p>
+                <p class="product-warranty">Bảo hành: 12 tháng</p>
+                <p class="product-price">Giá: <del> 200.000 VND</del> 100.000 VND</p>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <div class="product-action">
+                    <button class="btn btn-primary">Thêm vào giỏ hàng</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="product-item">
+                <img src="https://images.pexels.com/photos/285814/pexels-photo-285814.jpeg" alt="Product Image"
+                    class="product-image" />
+                <h3 class="product-name">Sản phẩm 1</h3>
+                <p class="product-description">Mô tả ngắn về sản phẩm 1.</p>
+                <p class="product-warranty">Bảo hành: 12 tháng</p>
+                <p class="product-price">Giá: <del> 200.000 VND</del> 100.000 VND</p>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+                <div class="product-action">
+                    <button class="btn btn-primary">Thêm vào giỏ hàng</button>
+                    <span class="space-x"></span>
+                    <button class="btn btn-success">Mua ngay</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
