@@ -1,6 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -17,14 +18,19 @@ export class RegisterComponent {
   isAccepted: boolean;
   dateOfBirth: Date;
 
-  constructor() {
-    this.phone = '';
-    this.password = '';
-    this.retypePassword = '';
-    this.fullName = '';
-    this.address = '';
-    this.isAccepted = false;
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {
+    this.phone = '33445566';
+    this.password = '123456';
+    this.retypePassword = '123456';
+    this.fullName = 'nguyen van test';
+    this.address = 'dc 123';
+    this.isAccepted = true;
     this.dateOfBirth = new Date();
+    this.dateOfBirth.setFullYear(this.dateOfBirth.getFullYear() - 18);
+    //inject HttpClient and Router
   }
 
   onPhoneChange() {
@@ -32,7 +38,33 @@ export class RegisterComponent {
   }
 
   register() {
-    alert(`Đăng ký thành công cho số điện thoại: ${this.dateOfBirth}`);
+    const apiUrl = 'http://localhost:8088/api/v1/users/register';
+    const registerData = {
+      fullname: this.fullName,
+      phone_number: this.phone,
+      address: this.address,
+      password: this.password,
+      retype_password: this.retypePassword,
+      date_of_birth: this.dateOfBirth,
+      facebook_account_id: 0,
+      google_account_id: 0,
+      role_id: 1,
+    };
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    this.http.post(apiUrl, registerData, { headers: headers }).subscribe({
+      next: (_response: any) => {
+        debugger;
+        // Xử lý kết quả trả về khi đăng ký thành công
+        this.router.navigate(['/login']);
+      },
+      complete: () => {
+        debugger;
+      },
+      error: (error: any) => {
+        // Xử lý lỗi nếu có
+        alert('Đăng ký không thành công, error: ' + error.error);
+      },
+    });
   }
 
   checkPasswordsMatch() {
