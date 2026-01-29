@@ -1,7 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { UserService } from '../service/user.service';
+import { RegisterDTO } from '../dtos/register.dto';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -19,17 +20,17 @@ export class RegisterComponent {
   dateOfBirth: Date;
 
   constructor(
-    private http: HttpClient,
     private router: Router,
+    private userService: UserService,
   ) {
-    this.phone = '33445566';
-    this.password = '123456';
-    this.retypePassword = '123456';
-    this.fullName = 'nguyen van test';
-    this.address = 'dc 123';
+    this.phone = '';
+    this.password = '';
+    this.retypePassword = '';
+    this.fullName = '';
+    this.address = '';
     this.isAccepted = true;
     this.dateOfBirth = new Date();
-    this.dateOfBirth.setFullYear(this.dateOfBirth.getFullYear() - 18);
+    // this.dateOfBirth.setFullYear(this.dateOfBirth.getFullYear() - 18);
     //inject HttpClient and Router
   }
 
@@ -38,8 +39,7 @@ export class RegisterComponent {
   }
 
   register() {
-    const apiUrl = 'http://localhost:8088/api/v1/users/register';
-    const registerData = {
+    const registerDTO: RegisterDTO = {
       fullname: this.fullName,
       phone_number: this.phone,
       address: this.address,
@@ -50,8 +50,7 @@ export class RegisterComponent {
       google_account_id: 0,
       role_id: 1,
     };
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    this.http.post(apiUrl, registerData, { headers: headers }).subscribe({
+    this.userService.registerUser(registerDTO).subscribe({
       next: (_response: any) => {
         debugger;
         // Xử lý kết quả trả về khi đăng ký thành công
