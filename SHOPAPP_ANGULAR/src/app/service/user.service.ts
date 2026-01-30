@@ -18,7 +18,10 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   private createHeaders(): HttpHeaders {
-    return new HttpHeaders({ 'Content-Type': 'application/json' });
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept-Language': 'vi',
+    });
   }
 
   registerUser(registerDTO: RegisterDTO): Observable<any> {
