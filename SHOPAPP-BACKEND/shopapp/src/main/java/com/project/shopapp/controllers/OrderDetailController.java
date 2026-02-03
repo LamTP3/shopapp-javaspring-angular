@@ -1,9 +1,11 @@
 package com.project.shopapp.controllers;
 
+import com.project.shopapp.components.LocalizationUtils;
 import com.project.shopapp.dtos.OrderDetailDTO;
 import com.project.shopapp.models.OrderDetail;
 import com.project.shopapp.responses.OrderDetailResponse;
 import com.project.shopapp.services.OrderDetailService;
+import com.project.shopapp.utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.util.List;
 //@Validated
 public class OrderDetailController {
     private final OrderDetailService orderDetailService;
+    private final LocalizationUtils localizationUtils;
 
     // Thêm mới 1 order detail
     @PostMapping("")
@@ -96,7 +99,7 @@ public class OrderDetailController {
     ) {
         try {
             orderDetailService.deleteById(id);
-            return ResponseEntity.ok().body("Delete order detail with id: " + id + " successfully");
+            return ResponseEntity.ok().body(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_ORDER_DETAIL_SUCCESSFULLY, id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

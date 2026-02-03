@@ -1,6 +1,7 @@
 package com.project.shopapp.controllers;
 
 import com.github.javafaker.Faker;
+import com.project.shopapp.components.LocalizationUtils;
 import com.project.shopapp.dtos.ProductDTO;
 import com.project.shopapp.dtos.ProductImageDTO;
 import com.project.shopapp.models.Product;
@@ -8,6 +9,7 @@ import com.project.shopapp.models.ProductImage;
 import com.project.shopapp.responses.ProductListResponse;
 import com.project.shopapp.responses.ProductResponse;
 import com.project.shopapp.services.IProductService;
+import com.project.shopapp.utils.MessageKeys;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductController {
     private final IProductService productService;
+    private final LocalizationUtils localizationUtils;
 
     @PostMapping("")
     // Nếu tham số truyền vào là 1 object thì sao ? => Data Transfer Object = Request Object
@@ -70,7 +73,7 @@ public class ProductController {
             Product existingProduct = productService.getProductById(productId);
             files = files == null ? new ArrayList<>() : files;
             if (files.size() > ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
-                return ResponseEntity.badRequest().body("You can upload maximum 5 images");
+                return ResponseEntity.badRequest().body(MessageKeys.PRODUCT_MAX_UPLOAD_QUANTITY_IMAGE);
             }
             List<ProductImage> productImages = new ArrayList<>();
             for (MultipartFile file : files) {
@@ -79,11 +82,11 @@ public class ProductController {
                 }
                 // Kiểm tra kích thước và định dạng file
                 if (file.getSize() > 10 * 1024 * 1024) { // Kích thức > 10MB
-                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("File is to large: Maximum file is 10MB");
+                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(MessageKeys.PRODUCT_MAX_UPLOAD_SIZE_IMAGE);
                 }
                 String contentType = file.getContentType();
                 if (contentType == null || !contentType.startsWith("image/")) {
-                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("File must be an image");
+                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(MessageKeys.PRODUCT_UPLOAD_FILE_TYPE);
                 }
                 // Lưu file và cập nhập thumbnail trong DTO
                 String filename = storeFile(file);

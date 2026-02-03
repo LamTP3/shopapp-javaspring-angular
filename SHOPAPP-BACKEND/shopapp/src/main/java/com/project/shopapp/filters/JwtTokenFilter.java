@@ -1,6 +1,6 @@
 package com.project.shopapp.filters;
 
-import com.project.shopapp.components.JwtTokenUtil;
+import com.project.shopapp.components.JwtTokenUtils;
 import com.project.shopapp.models.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +27,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Value("${api.prefix}")
     private String apiPrefix;
     private final UserDetailsService userDetailsService;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtils jwtTokenUtil;
 
     @Override
     protected void doFilterInternal(
