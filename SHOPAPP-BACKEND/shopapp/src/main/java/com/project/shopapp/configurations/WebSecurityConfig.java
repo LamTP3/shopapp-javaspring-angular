@@ -40,9 +40,15 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(requests -> {
                     requests.requestMatchers(
                                     String.format("%s/users/login", apiPrefix),
-                                    String.format("%s/users/register", apiPrefix)
+                                    String.format("%s/users/register", apiPrefix),
+                                    String.format("%s/roles", apiPrefix)
+//                                    String.format("%s/users/refresh-token", apiPrefix)
                             )
                             .permitAll()
+
+//                            .requestMatchers(GET,
+//                                    String.format("%s/roles**", apiPrefix)).hasAnyRole(Role.USER, Role.ADMIN)
+
                             .requestMatchers(GET,
                                     String.format("%s/categories**", apiPrefix)).hasAnyRole(Role.USER, Role.ADMIN)
                             .requestMatchers(POST,
@@ -81,7 +87,7 @@ public class WebSecurityConfig {
                             .anyRequest().authenticated();
                 })
                 .csrf(AbstractHttpConfigurer::disable);
-        
+
         http.cors(new Customizer<CorsConfigurer<HttpSecurity>>() {
             @Override
             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
