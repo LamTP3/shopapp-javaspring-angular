@@ -19,4 +19,7 @@ public class MessageKeys {
     public static final String PRODUCT_MAX_UPLOAD_QUANTITY_IMAGE = "product.upload_images.error_max_5_images";
     public static final String PRODUCT_MAX_UPLOAD_SIZE_IMAGE = "product.upload_images.file_large";
     public static final String PRODUCT_UPLOAD_FILE_TYPE = "product.upload_images.file_must_be_image";
+
+    public static final String ROLE_DOES_NOT_EXISTS = "user.login.role_does_not_exists";
+    public static final String WRONG_PHONE_PASSWORD = "user.login.wrong_phone_password";
 }
