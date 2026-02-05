@@ -163,7 +163,8 @@ public class ProductController {
         // Lưu ý: page trong PageRequest bắt đầu từ 0
         PageRequest pageRequest = PageRequest.of(
                 page - 1, limit,
-                Sort.by("createdAt").descending()
+                Sort.by("id").ascending()
+//                Sort.by("createdAt").descending()
         );
         Page<ProductResponse> productPage = productService.getAllProducts(pageRequest);
         //Lấy tổng số trang
