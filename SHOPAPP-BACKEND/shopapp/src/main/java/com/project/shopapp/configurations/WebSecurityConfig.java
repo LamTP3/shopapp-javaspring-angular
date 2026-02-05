@@ -45,10 +45,7 @@ public class WebSecurityConfig {
 //                                    String.format("%s/users/refresh-token", apiPrefix)
                             )
                             .permitAll()
-
-//                            .requestMatchers(GET,
-//                                    String.format("%s/roles**", apiPrefix)).hasAnyRole(Role.USER, Role.ADMIN)
-
+                            
                             .requestMatchers(GET,
                                     String.format("%s/categories**", apiPrefix)).hasAnyRole(Role.USER, Role.ADMIN)
                             .requestMatchers(POST,
