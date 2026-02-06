@@ -120,7 +120,7 @@ public class ProductController {
             } else {
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
-                        .body(new UrlResource(Paths.get("uploads/notfound.jpg").toUri()));
+                        .body(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
                 //return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
@@ -159,7 +159,7 @@ public class ProductController {
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0", name = "category_id") Long categoryId,
             @RequestParam(defaultValue = "1", name = "page") int page,
-            @RequestParam(defaultValue = "10", name = "limit") int limit
+            @RequestParam(defaultValue = "12", name = "limit") int limit
     ) {
         // Tạo Pageable từ thông tin trang và giới hạn
         // Lưu ý: page trong PageRequest bắt đầu từ 0

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/app/environments/environment';
 import { ProductService } from 'src/app/service/product.service';
-import { Product } from '../models/product';
+import { Product } from '../../models/product';
+import { CategoryService } from 'src/app/service/category.service';
+import { Category } from 'src/app/models/category';
 
 @Component({
   selector: 'app-home',
@@ -10,46 +12,96 @@ import { Product } from '../models/product';
 })
 export class HomeComponent implements OnInit {
   products: Product[] = [];
+  categories: Category[] = [];
+  selectedCategoryId: number = 0;
   currentPage: number = 1;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 12;
   page: number[] = [];
   totalPages: number = 0;
   visiblePages: number[] = [];
-  constructor(private productService: ProductService) {}
+  keyword: string = '';
+  constructor(
+    private productService: ProductService,
+    private categoryService: CategoryService,
+  ) {}
   ngOnInit(): void {
-    this.getProducts(this.currentPage, this.itemsPerPage);
+    this.getProducts(
+      this.keyword,
+      this.selectedCategoryId,
+      this.currentPage,
+      this.itemsPerPage,
+    );
+    this.getCategories(1, 100);
   }
 
-  getProducts(page: number, limit: number) {
-    this.productService.getProducts(page, limit).subscribe({
-      next: (response: any) => {
+  getCategories(page: number, limit: number) {
+    this.categoryService.getCategories(page, limit).subscribe({
+      next: (categories: Category[]) => {
         debugger;
-        response.products.forEach((product: Product) => {
-          // debugger;
-          product.url = `${environment.apiBaseUrl}/products/images/${product.thumbnail}`;
-        });
-        this.products = response.products;
-        this.totalPages = response.totalPages;
-        this.visiblePages = this.generateVisiblePageArray(
-          this.currentPage,
-          this.totalPages,
-        );
+        this.categories = categories;
       },
       complete: () => {
         debugger;
       },
-
       error: (error: any) => {
-        debugger;
-        console.error('Lấy danh sách sản phẩm thất bại: ' + error?.error);
+        console.error('Error fetching categories:', error);
       },
     });
+  }
+
+  searchProducts() {
+    this.currentPage = 1;
+    this.itemsPerPage = 12;
+    debugger;
+    this.getProducts(
+      this.keyword,
+      this.selectedCategoryId,
+      this.currentPage,
+      this.itemsPerPage,
+    );
+  }
+
+  getProducts(
+    keyword: string,
+    selectedCategoryId: number,
+    page: number,
+    limit: number,
+  ) {
+    debugger;
+    this.productService
+      .getProducts(keyword, selectedCategoryId, page, limit)
+      .subscribe({
+        next: (response: any) => {
+          debugger;
+          response.products.forEach((product: Product) => {
+            product.url = `${environment.apiBaseUrl}/products/images/${product.thumbnail}`;
+          });
+          this.products = response.products;
+          this.totalPages = response.totalPages;
+          this.visiblePages = this.generateVisiblePageArray(
+            this.currentPage,
+            this.totalPages,
+          );
+        },
+        complete: () => {
+          debugger;
+        },
+        error: (error: any) => {
+          debugger;
+          console.error('Error fetching products:', error);
+        },
+      });
   }
 
   onPageChange(page: number) {
     debugger;
     this.currentPage = page;
-    this.getProducts(this.currentPage, this.itemsPerPage);
+    this.getProducts(
+      this.keyword,
+      this.selectedCategoryId,
+      this.currentPage,
+      this.itemsPerPage,
+    );
   }
 
   generateVisiblePageArray(currentPage: number, totalPages: number): number[] {

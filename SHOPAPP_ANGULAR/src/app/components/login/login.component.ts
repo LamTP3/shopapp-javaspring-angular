@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { LoginResponse } from '../../responses/user/login.response';
 import { TokenService } from 'src/app/service/token.service';
 import { RoleService } from 'src/app/service/role.service';
-import { Role } from '../models/role';
+import { Role } from '../../models/role';
 
 @Component({
   selector: 'app-login',
