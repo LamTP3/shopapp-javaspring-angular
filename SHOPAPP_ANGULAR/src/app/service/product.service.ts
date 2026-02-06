@@ -11,14 +11,7 @@ import { HttpUtilService } from './http.util.service';
 export class ProductService {
   private apiGetProducts = `${environment.apiBaseUrl}/products`;
 
-  private apiConfig = {
-    headers: this.httpUtilService.createHeaders(),
-  };
-
-  constructor(
-    private http: HttpClient,
-    private httpUtilService: HttpUtilService,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   getProducts(
     keyword: string,
@@ -32,8 +25,11 @@ export class ProductService {
       .set('page', page.toString())
       .set('limit', limit.toString());
     return this.http.get<Product[]>(this.apiGetProducts, {
-      ...this.apiConfig,
       params,
     });
+  }
+
+  getDetailProduct(productId: number) {
+    return this.http.get(`${environment.apiBaseUrl}/products/${productId}`);
   }
 }
