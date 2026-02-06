@@ -156,8 +156,10 @@ public class ProductController {
 
     @GetMapping("")
     public ResponseEntity<ProductListResponse> getAllProducts(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0", name = "category_id") Long categoryId,
+            @RequestParam(defaultValue = "1", name = "page") int page,
+            @RequestParam(defaultValue = "10", name = "limit") int limit
     ) {
         // Tạo Pageable từ thông tin trang và giới hạn
         // Lưu ý: page trong PageRequest bắt đầu từ 0
@@ -166,7 +168,7 @@ public class ProductController {
                 Sort.by("id").ascending()
 //                Sort.by("createdAt").descending()
         );
-        Page<ProductResponse> productPage = productService.getAllProducts(pageRequest);
+        Page<ProductResponse> productPage = productService.getAllProducts(keyword, categoryId, pageRequest);
         //Lấy tổng số trang
         int totalPages = productPage.getTotalPages();
         List<ProductResponse> products = productPage.getContent();
