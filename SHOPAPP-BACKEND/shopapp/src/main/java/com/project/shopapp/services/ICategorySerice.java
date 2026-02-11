@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface ICategorySerice {
 
-    Category createCategory(CategoryDTO categoryDTO);
+    void createCategory(CategoryDTO categoryDTO);
 
     Category getCategoryById(Long id);
 
     List<Category> getAllCategories();
 
-    Category updateCategory(Long id, CategoryDTO category);
+    void updateCategory(Long id, CategoryDTO category);
 
     void deleteCategory(Long id);
 }

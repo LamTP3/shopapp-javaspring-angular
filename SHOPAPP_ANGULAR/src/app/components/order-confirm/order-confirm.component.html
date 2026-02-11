@@ -15,36 +15,34 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>
-                        <div class="product-info">
-                            <img src="https://images.pexels.com/photos/285814/pexels-photo-285814.jpeg"
-                                class="product-image" alt="Product Image" />
-                            <span class="product-name">Tên sản phẩm 1</span>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>150.000đ</td>
-                    <td>300.000đ</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="product-info">
-                            <img src="https://images.pexels.com/photos/285814/pexels-photo-285814.jpeg"
-                                class="product-image" alt="Product Image" />
-                            <span class="product-name">Tên sản phẩm 2</span>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>150.000đ</td>
-                    <td>300.000đ</td>
-                </tr>
+                <ng-container *ngFor="let item of cartItems">
+                    <tr>
+                        <td>
+                            <div class="product-info">
+                                <img [src]="item.product.thumbnail" alt="Product Image" class="product-image">
+                                <span class="product-name">{{ item.product.name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.product.price | currency:'VND':'symbol':'1.0-0' }}</td>
+                        <td>{{ (item.product.price * item.quantity) | currency:'VND':'symbol':'1.0-0' }}</td>
+                    </tr>
+                </ng-container>
             </tbody>
         </table>
-        <div class="text-center mt-3">
-            <button class="btn btn-gradient">Tiếp tục mua sắm</button>
-
+    </div>
+    <!-- Ô nhập mã giảm giá -->
+    <div class="input-group mb-3 mt-3 col-6">
+        <input type="text" class="form-control" [(ngModel)]="couponCode" placeholder="Mã giảm giá">
+        <div class="input-group-append" style="margin-left: 10px;">
+            <button class="btn btn-outline-secondary" type="button" (click)="applyCoupon()">Áp dụng mã</button>
         </div>
+    </div>
+
+    <!-- Hiển thị tổng tiền sau khi áp dụng giảm giá -->
+    <p class="mb-0">Tổng tiền: {{ totalAmount | currency:'VND':'symbol':'1.0-0' }}</p>
+    <div class="text-center mt-3">
+        <button class="btn btn-gradient" type="button">Đặt hàng</button>
     </div>
 </div>
 <app-footer></app-footer>

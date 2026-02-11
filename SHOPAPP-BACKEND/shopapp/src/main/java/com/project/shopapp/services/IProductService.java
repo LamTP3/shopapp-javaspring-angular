@@ -9,6 +9,8 @@ import com.project.shopapp.responses.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
+
 public interface IProductService {
     Product createProduct(ProductDTO productDTO) throws Exception;
 
@@ -30,4 +32,6 @@ public interface IProductService {
             Long productId,
             ProductImageDTO productImageDTO
     ) throws Exception;
+
+    List<Product> findProductsByIds(List<Long> productIds);
 }
