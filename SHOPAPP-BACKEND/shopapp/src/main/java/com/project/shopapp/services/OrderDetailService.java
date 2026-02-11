@@ -22,6 +22,7 @@ public class OrderDetailService implements IOrderDetailService {
     private final ProductRepository productRepository;
 
     @Override
+    @Transactional
     public OrderDetail createOrderDetail(OrderDetailDTO orderDetailDTO) throws Exception {
         // Tìm xem orderId có tồn tại ko
         Order order = orderRepository.findById(orderDetailDTO.getOrderId())
@@ -51,6 +52,7 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
+    @Transactional
     public OrderDetail updateOrderDetail(Long id, OrderDetailDTO orderDetailDTO)
             throws DataNotFoundException {
         // Tìm xem order detail có tồn tại ko
@@ -65,7 +67,6 @@ public class OrderDetailService implements IOrderDetailService {
         Product existingProduct = productRepository.findById(orderDetailDTO.getProductId())
                 .orElseThrow(() -> new DataNotFoundException(
                         "Cannot find product with id " + orderDetailDTO.getProductId()));
-
         exstingOrderDetail.setPrice(orderDetailDTO.getPrice());
         exstingOrderDetail.setNumberOfProducts(orderDetailDTO.getNumberOfProducts());
         exstingOrderDetail.setTotalMoney(orderDetailDTO.getTotalMoney());

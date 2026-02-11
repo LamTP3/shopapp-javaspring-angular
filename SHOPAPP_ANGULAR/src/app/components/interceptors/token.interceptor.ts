@@ -11,19 +11,19 @@ import { TokenService } from 'src/app/service/token.service';
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
   constructor(private tokenService: TokenService) {}
+
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
     const token = this.tokenService.getToken();
     if (token) {
-      const cloned = req.clone({
-        headers: req.headers.set('Authorization', 'Bearer ' + token),
+      req = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      return next.handle(cloned);
-    } else {
-      return next.handle(req);
     }
+    return next.handle(req);
   }
-  // phải đăng ký interceptor này trong app.module.ts
 }

@@ -46,14 +46,11 @@ public class ProductController {
     // Nếu tham số truyền vào là 1 object thì sao ? => Data Transfer Object = Request Object
     public ResponseEntity<?> createProduct(
             @Valid @RequestBody ProductDTO productDTO,
-            //@ModelAttribute("files") List<MultipartFile> files,
-            //@RequestPart("file") MultipartFile file,
             BindingResult result
     ) {
         try {
             if (result.hasErrors()) {
-                List<String> errorMessages = result
-                        .getFieldErrors()
+                List<String> errorMessages = result.getFieldErrors()
                         .stream()
                         .map(FieldError::getDefaultMessage)
                         .toList();
@@ -66,7 +63,8 @@ public class ProductController {
         }
     }
 
-    @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "uploads/{id}",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImages(
             @PathVariable("id") Long productId,
             @ModelAttribute("files") List<MultipartFile> files
@@ -75,7 +73,8 @@ public class ProductController {
             Product existingProduct = productService.getProductById(productId);
             files = files == null ? new ArrayList<>() : files;
             if (files.size() > ProductImage.MAXIMUM_IMAGES_PER_PRODUCT) {
-                return ResponseEntity.badRequest().body(MessageKeys.PRODUCT_MAX_UPLOAD_QUANTITY_IMAGE);
+                return ResponseEntity.badRequest().body(localizationUtils
+                        .getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_MAX_5));
             }
             List<ProductImage> productImages = new ArrayList<>();
             for (MultipartFile file : files) {
@@ -84,14 +83,18 @@ public class ProductController {
                 }
                 // Kiểm tra kích thước và định dạng file
                 if (file.getSize() > 10 * 1024 * 1024) { // Kích thức > 10MB
-                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(MessageKeys.PRODUCT_MAX_UPLOAD_SIZE_IMAGE);
+                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                            .body(localizationUtils
+                                    .getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_LARGE));
                 }
                 String contentType = file.getContentType();
                 if (contentType == null || !contentType.startsWith("image/")) {
-                    return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(MessageKeys.PRODUCT_UPLOAD_FILE_TYPE);
+                    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                            .body(localizationUtils
+                                    .getLocalizedMessage(MessageKeys.UPLOAD_IMAGES_FILE_MUST_BE_IMAGE));
                 }
                 // Lưu file và cập nhập thumbnail trong DTO
-                String filename = storeFile(file);
+                String filename = storeFile(file); // Thay thế hàm này với code của bạn để lưu file
                 // lưu vào đối tượng product trong DB
                 ProductImage productImage = productService.createProductImage(
                         existingProduct.getId(),
@@ -121,7 +124,6 @@ public class ProductController {
                 return ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_JPEG)
                         .body(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
-                //return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
@@ -130,20 +132,22 @@ public class ProductController {
 
     private String storeFile(MultipartFile file) throws IOException {
         if (!isImageFile(file) || file.getOriginalFilename() == null) {
+            // Chưa ăn đa ngôn ngữ
+            // throw new IOException(localizationUtils
+            //          .getLocalizedMessage(MessageKeys.INVALID_IMAGES_FORMAT));
             throw new IOException("Invalid image format");
         }
-        // String filename = StringUtils.cleanPath(file.getOriginalFilename());
         String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         // Thêm UUID vào trước tên file để đảm bảo tên file duy nhất
         String uniqueFileName = UUID.randomUUID().toString() + "_" + filename;
         // Đường dẫn file đến thư mục bạn muốn lưu file
-        java.nio.file.Path uploadDir = Paths.get("uploads");
+        Path uploadDir = Paths.get("uploads");
         // Kiểm tra và tạo thư mục nếu nó không tồn tại
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
         // Đường dẫn đầy đủ của file
-        java.nio.file.Path destination = Paths.get(uploadDir.toString(), uniqueFileName);
+        Path destination = Paths.get(uploadDir.toString(), uniqueFileName);
         // Sao chép file vào thư mục đích
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFileName;
@@ -166,9 +170,10 @@ public class ProductController {
         PageRequest pageRequest = PageRequest.of(
                 page - 1, limit,
                 Sort.by("id").ascending()
-//                Sort.by("createdAt").descending()
+                // Sort.by("createdAt").descending()
         );
-        Page<ProductResponse> productPage = productService.getAllProducts(keyword, categoryId, pageRequest);
+        Page<ProductResponse> productPage = productService.getAllProducts(
+                keyword, categoryId, pageRequest);
         //Lấy tổng số trang
         int totalPages = productPage.getTotalPages();
         List<ProductResponse> products = productPage.getContent();
@@ -197,7 +202,7 @@ public class ProductController {
     ) {
         try {
             productService.deleteProduct(id);
-            return ResponseEntity.status(HttpStatus.OK).body("Delete successfully product with id: " + id);
+            return ResponseEntity.ok(String.format("Product with id = %d deleted successfully", id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

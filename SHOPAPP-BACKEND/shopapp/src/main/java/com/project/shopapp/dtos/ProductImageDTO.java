@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 public class ProductImageDTO {
     @JsonProperty("product_id")
-    @Min(value = 1, message = "Product ID must be greater than 0")
+    @Min(value = 1, message = "Product ID must be > 0")
     private long productId;
 
     @Size(min = 5, max = 200, message = "Image's name")

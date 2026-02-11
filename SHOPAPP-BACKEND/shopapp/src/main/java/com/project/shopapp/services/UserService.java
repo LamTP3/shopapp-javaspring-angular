@@ -17,6 +17,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -31,6 +32,7 @@ public class UserService implements IUserService {
     private final LocalizationUtils localizationUtils;
 
     @Override
+    @Transactional
     public User createUser(UserDTO userDTO) throws Exception {
         String phoneNumber = userDTO.getPhoneNumber();
         //Kiểm tra xem s điện thoại đã tồn tại hay chưa
@@ -38,9 +40,10 @@ public class UserService implements IUserService {
             throw new DataIntegrityViolationException("Phone number already exists");
         }
         Role role = roleRepository.findById(userDTO.getRoleId())
-                .orElseThrow(() -> new DataNotFoundException("Role not found with id: " + userDTO.getRoleId()));
+                .orElseThrow(() -> new DataNotFoundException(
+                        localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXIST)));
         if (role.getName().toUpperCase().equals(Role.ADMIN)) {
-            throw new PermissionDenyException("You cannot register as ADMIN role");
+            throw new PermissionDenyException("You cannot register an admin account");
         }
         // convert UserDTO to User entity
         User newUser = User.builder()
@@ -52,8 +55,8 @@ public class UserService implements IUserService {
                 .facebookAccountId(userDTO.getFacebookAccountId())
                 .googleAccountId(userDTO.getGoogleAccountId())
                 .build();
-        newUser.setRole(role);
 
+        newUser.setRole(role);
         // Kiểm tra nếu có accountId, không yêu cầu mật khẩu
         if (newUser.getFacebookAccountId() == 0 && newUser.getGoogleAccountId() == 0) {
             String password = userDTO.getPassword();
@@ -64,28 +67,37 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String login(String phoneNumber, String password, Long roleId) throws Exception {
+    public String login(
+            String phoneNumber,
+            String password,
+            Long roleId
+    ) throws Exception {
         Optional<User> optionalUser = userRepository.findByPhoneNumber(phoneNumber);
         if (optionalUser.isEmpty()) {
-            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.WRONG_PHONE_PASSWORD));
+            throw new DataNotFoundException(localizationUtils
+                    .getLocalizedMessage(MessageKeys.WRONG_PHONE_PASSWORD));
         }
-        // muốn trả về JWT token thì phải làm thêm
+        // return optionalUser.get();//muốn trả JWT token ?
         User existingUser = optionalUser.get();
         // check password
         if (existingUser.getFacebookAccountId() == 0
                 && existingUser.getGoogleAccountId() == 0) {
             if (!passwordEncoder.matches(password, existingUser.getPassword())) {
-                throw new BadCredentialsException(localizationUtils.getLocalizedMessage(MessageKeys.WRONG_PHONE_PASSWORD));
+                throw new BadCredentialsException(localizationUtils
+                        .getLocalizedMessage(MessageKeys.WRONG_PHONE_PASSWORD));
             }
         }
 
         Optional<Role> optionalRole = roleRepository.findById(roleId);
         if (optionalRole.isEmpty() || !roleId.equals(existingUser.getRole().getId())) {
-            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXISTS));
+            throw new DataNotFoundException(localizationUtils
+                    .getLocalizedMessage(MessageKeys.ROLE_DOES_NOT_EXIST));
+        }
+        if (!optionalUser.get().isActive()) {
+            throw new DataNotFoundException(localizationUtils.getLocalizedMessage(MessageKeys.USER_IS_LOCKED));
         }
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                phoneNumber,
-                password,
+                phoneNumber, password,
                 existingUser.getAuthorities()
         );
         //authenticate with Java Spring Security

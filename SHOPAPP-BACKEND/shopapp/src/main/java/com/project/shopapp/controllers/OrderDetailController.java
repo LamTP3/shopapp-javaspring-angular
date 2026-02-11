@@ -99,7 +99,8 @@ public class OrderDetailController {
     ) {
         try {
             orderDetailService.deleteById(id);
-            return ResponseEntity.ok().body(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_ORDER_DETAIL_SUCCESSFULLY, id));
+            return ResponseEntity.ok().body(localizationUtils
+                    .getLocalizedMessage(MessageKeys.DELETE_ORDER_DETAIL_SUCCESSFULLY, id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

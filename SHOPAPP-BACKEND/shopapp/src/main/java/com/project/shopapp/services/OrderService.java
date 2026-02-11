@@ -24,6 +24,7 @@ public class OrderService implements IOrderService {
     private final ModelMapper modelMapper;
 
     @Override
+    @Transactional
     public Order createOrder(OrderDTO orderDTO) throws Exception {
         //Tìm xem user_id có tồn tại không
         User user = userRepository

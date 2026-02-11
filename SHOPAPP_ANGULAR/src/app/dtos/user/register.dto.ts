@@ -22,9 +22,7 @@ export class RegisterDTO {
   date_of_birth: Date;
 
   facebook_account_id: number = 0;
-
   google_account_id: number;
-
   role_id: number = 1;
 
   constructor(data: any) {

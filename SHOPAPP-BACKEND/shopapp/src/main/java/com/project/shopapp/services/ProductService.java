@@ -27,6 +27,7 @@ public class ProductService implements IProductService {
     private final ProductImageRepository productImageRepository;
 
     @Override
+    @Transactional
     public Product createProduct(ProductDTO productDTO) throws DataNotFoundException {
         Category existingCategory = categoryRepository.findById(productDTO.getCategoryId())
                 .orElseThrow(() ->
@@ -40,7 +41,6 @@ public class ProductService implements IProductService {
                 .description(productDTO.getDescription())
                 .category(existingCategory)
                 .build();
-
         return productRepository.save(newProduct);
     }
 
@@ -55,14 +55,13 @@ public class ProductService implements IProductService {
 
     @Override
     public Page<ProductResponse> getAllProducts(
-            String keyword,
-            Long categoryId,
-            PageRequest pageRequest) {
+            String keyword, Long categoryId,
+            PageRequest pageRequest
+    ) {
         // Lấy danh sách sản phẩm theo trang(page) với giới hạn (limit)
         Page<Product> productsPage;
         productsPage = productRepository.searchProducts(categoryId, keyword, pageRequest);
-        return productsPage
-                .map(ProductResponse::fromProduct);
+        return productsPage.map(ProductResponse::fromProduct);
     }
 
     @Override
@@ -90,6 +89,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProduct(long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
         optionalProduct.ifPresent(productRepository::delete);
@@ -101,6 +101,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public ProductImage createProductImage(
             Long productId,
             ProductImageDTO productImageDTO

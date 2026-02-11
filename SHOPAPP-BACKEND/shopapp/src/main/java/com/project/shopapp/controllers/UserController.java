@@ -32,32 +32,34 @@ public class UserController {
             @Valid @RequestBody UserDTO userDTO,
             BindingResult result
     ) {
+        RegisterResponse registerResponse = new RegisterResponse();
+
+        if (result.hasErrors()) {
+            List<String> errorMessages = result.getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            registerResponse.setMessage(errorMessages.toString());
+            return ResponseEntity.badRequest().body(registerResponse);
+        }
+
+        if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
+            registerResponse.setMessage(localizationUtils
+                    .getLocalizedMessage(MessageKeys.PASSWORD_NOT_MATCH));
+            return ResponseEntity.badRequest().body(registerResponse);
+        }
+
         try {
-            if (result.hasErrors()) {
-                List<String> errorMessages = result.getFieldErrors()
-                        .stream()
-                        .map(FieldError::getDefaultMessage)
-                        .toList();
-                return ResponseEntity.badRequest().body(RegisterResponse.builder()
-                        .message(errorMessages.toString())
-                        .build());
-            }
-            if (!userDTO.getPassword().equals(userDTO.getRetypePassword())) {
-                return ResponseEntity.badRequest().body(RegisterResponse.builder()
-                        .message(localizationUtils.getLocalizedMessage(MessageKeys.PASSWORD_NOT_MATCH))
-                        .build());
-            }
             User user = userService.createUser(userDTO);
-            return ResponseEntity.ok(RegisterResponse.builder()
-                    .message(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_SUCCESSFULLY))
-                    .user(user)
-                    .build());
+            registerResponse.setMessage(localizationUtils
+                    .getLocalizedMessage(MessageKeys.REGISTER_SUCCESSFULLY));
+            registerResponse.setUser(user);
+            return ResponseEntity.ok(registerResponse);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(
-                    RegisterResponse.builder()
-                            .message(localizationUtils.getLocalizedMessage(MessageKeys.REGISTER_FAILED, e.getMessage()))
-                            .build()
-            );
+            registerResponse.setMessage(localizationUtils
+                    .getLocalizedMessage(MessageKeys.REGISTER_FAILED, e.getMessage()));
+            return ResponseEntity.badRequest().body(registerResponse);
         }
     }
 
@@ -65,22 +67,23 @@ public class UserController {
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody UserLoginDTO userLoginDTO
     ) {
+        LoginResponse loginResponse = new LoginResponse();
         try {
             // Kiểm tra thông tin đăng nhập và sinh token
-            // Trả về token trong response
             String token = userService.login(
                     userLoginDTO.getPhoneNumber(),
                     userLoginDTO.getPassword(),
-                    userLoginDTO.getRoleId() == null ? 1 : userLoginDTO.getRoleId()
+                    userLoginDTO.getRoleId()
             );
-            return ResponseEntity.ok(LoginResponse.builder()
-                    .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY))
-                    .token(token)
-                    .build());
+            // Trả về token trong response
+            loginResponse.setMessage(localizationUtils
+                    .getLocalizedMessage(MessageKeys.LOGIN_SUCCESSFULLY));
+            loginResponse.setToken(token);
+            return ResponseEntity.ok(loginResponse);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(LoginResponse.builder()
-                    .message(localizationUtils.getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage()))
-                    .build());
+            loginResponse.setMessage(localizationUtils
+                    .getLocalizedMessage(MessageKeys.LOGIN_FAILED, e.getMessage()));
+            return ResponseEntity.badRequest().body(loginResponse);
         }
     }
 }

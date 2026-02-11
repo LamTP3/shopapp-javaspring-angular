@@ -94,7 +94,8 @@ public class OrderController {
         try {
             // xóa mềm => cập nhập trường isActive = false
             orderService.deleteOrder(id);
-            return ResponseEntity.ok(localizationUtils.getLocalizedMessage(MessageKeys.DELETE_ORDER_SUCCESSFULLY, id));
+            return ResponseEntity.ok(localizationUtils
+                    .getLocalizedMessage(MessageKeys.DELETE_ORDER_SUCCESSFULLY, id));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

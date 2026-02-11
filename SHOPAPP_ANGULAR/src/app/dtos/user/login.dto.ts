@@ -8,7 +8,6 @@ export class LoginDTO {
   @IsNotEmpty()
   password: string;
 
-  @IsNotEmpty()
   role_id: number;
 
   constructor(data: any) {
