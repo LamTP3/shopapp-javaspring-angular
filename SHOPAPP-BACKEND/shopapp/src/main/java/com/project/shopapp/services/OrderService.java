@@ -1,11 +1,12 @@
 package com.project.shopapp.services;
 
+import com.project.shopapp.dtos.CartItemDTO;
 import com.project.shopapp.dtos.OrderDTO;
 import com.project.shopapp.exceptions.DataNotFoundException;
-import com.project.shopapp.models.Order;
-import com.project.shopapp.models.OrderStatus;
-import com.project.shopapp.models.User;
+import com.project.shopapp.models.*;
+import com.project.shopapp.repositories.OrderDetailRepository;
 import com.project.shopapp.repositories.OrderRepository;
+import com.project.shopapp.repositories.ProductRepository;
 import com.project.shopapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +23,8 @@ import java.util.List;
 public class OrderService implements IOrderService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
+    private final ProductRepository productRepository;
+    private final OrderDetailRepository orderDetailRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -32,24 +36,52 @@ public class OrderService implements IOrderService {
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + orderDTO.getUserId()));
         //convert orderDTO => Order
         //dùng thư viện Model Mapper
-        // Tạo một luồng bằng an xạ riêng để kiểm soát việc ánh xạ
+        // Tạo một luồng bảng ánh xạ riêng để kiểm soát việc ánh xạ
         modelMapper.typeMap(OrderDTO.class, Order.class)
                 .addMappings(mapper -> mapper.skip(Order::setId));
         // Cập nhập các trường của đơn hàng từ orderDTO
         Order order = new Order();
         modelMapper.map(orderDTO, order);
         order.setUser(user);
-        order.setOrderDate(new Date());
+        order.setOrderDate(new Date());//lấy thời điểm hiện tại
         order.setStatus(OrderStatus.PENDING);
-        // Kiểm tra shipping date phải >= ngày hôm nay
+        //Kiểm tra shipping date phải >= ngày hôm nay
         LocalDate shippingDate = orderDTO.getShippingDate() == null
                 ? LocalDate.now() : orderDTO.getShippingDate();
         if (shippingDate.isBefore(LocalDate.now())) {
-            throw new DataNotFoundException("Shipping date must be greater than or equal to today");
+            throw new DataNotFoundException("Date must be at least today !");
         }
         order.setShippingDate(shippingDate);
-        order.setActive(true);
+        order.setActive(true);//đoạn này nên set sẵn trong sql
+        order.setTotalMoney(orderDTO.getTotalMoney());
         orderRepository.save(order);
+        // Tạo danh sách các đối tượng OrderDetail từ cartItems
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        for (CartItemDTO cartItemDTO : orderDTO.getCartItems()) {
+            // Tạo một đối tượng OrderDetail từ CartItemDTO
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrder(order);
+
+            // Lấy thông tin sản phẩm từ cartItemDTO
+            Long productId = cartItemDTO.getProductId();
+            int quantity = cartItemDTO.getQuantity();
+
+            // Tìm thông tin sản phẩm từ cơ sở dữ liệu (hoặc sử dụng cache nếu cần)
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new DataNotFoundException("Product not found with id: " + productId));
+
+            // Đặt thông tin cho OrderDetail
+            orderDetail.setProduct(product);
+            orderDetail.setNumberOfProducts(quantity);
+            // Các trường khác của OrderDetail nếu cần
+            orderDetail.setPrice(product.getPrice());
+
+            // Thêm OrderDetail vào danh sách
+            orderDetails.add(orderDetail);
+        }
+
+        // Lưu danh sách OrderDetail vào cơ sở dữ liệu
+        orderDetailRepository.saveAll(orderDetails);
         return order;
     }
 

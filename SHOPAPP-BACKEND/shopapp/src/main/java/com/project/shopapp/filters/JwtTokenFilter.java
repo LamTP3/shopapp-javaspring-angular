@@ -50,7 +50,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             final String phoneNumber = jwtTokenUtil.extractPhoneNumber(token);
             // Kiểm tra nếu token hợp lệ và chưa được xác thực
             if (phoneNumber != null
-                    && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    && SecurityContextHolder.getContext().getAuthentication() == null
+            ) {
                 User userDetails = (User) userDetailsService.loadUserByUsername(phoneNumber);
                 // Load user details và kiểm tra token
                 if (jwtTokenUtil.validateToken(token, userDetails)) {
