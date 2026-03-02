@@ -4,6 +4,7 @@ import { ProductService } from 'src/app/service/product.service';
 import { Product } from '../../models/product';
 import { CategoryService } from 'src/app/service/category.service';
 import { Category } from 'src/app/models/category';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -23,6 +24,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private categoryService: CategoryService,
+    private router: Router,
   ) {}
   ngOnInit(): void {
     this.getProducts(
@@ -118,5 +120,12 @@ export class HomeComponent implements OnInit {
     return new Array(endPage - startPage + 1)
       .fill(0)
       .map((_, index) => startPage + index);
+  }
+
+  // Hàm xử lý sự kiện khi sản phẩm được bấm vào
+  onProductClick(productId: number) {
+    debugger;
+    // Điều hướng đến trang detail-product với productId là tham số
+    this.router.navigate(['/products', productId]);
   }
 }
