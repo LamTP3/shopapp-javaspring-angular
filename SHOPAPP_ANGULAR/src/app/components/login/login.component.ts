@@ -2,11 +2,12 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { LoginDTO } from '../../dtos/user/login.dto';
 import { UserService } from '../../service/user.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginResponse } from '../../responses/user/login.response';
 import { TokenService } from 'src/app/service/token.service';
 import { RoleService } from 'src/app/service/role.service';
 import { Role } from '../../models/role';
+import { UserResponse } from 'src/app/responses/user/user.response';
 
 @Component({
   selector: 'app-login',
@@ -20,31 +21,45 @@ export class LoginComponent implements OnInit {
 
   roles: Role[] = [];
   rememberMe: boolean = true;
-  selectedRole: Role | undefined;
+  selectedRole: Role | undefined; // Biến để lưu giá trị được chọn từ dropdown
+  userResponse?: UserResponse;
 
   onPhoneNumberChange() {
     console.log('Phone changed:', this.phoneNumber);
+    //how to validate ? phone must be at least 6 characters
   }
 
   constructor(
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private userService: UserService,
     private tokenService: TokenService,
     private roleService: RoleService,
   ) {}
 
   ngOnInit() {
+    // Gọi API lấy danh sách roles và lưu vào biến roles
+    debugger;
     this.roleService.getRoles().subscribe({
       next: (roles: Role[]) => {
         debugger;
         this.roles = roles;
         this.selectedRole = roles.length > 0 ? roles[0] : undefined;
       },
+      complete: () => {
+        debugger;
+      },
       error: (error: any) => {
         debugger;
-        console.error('Lấy danh sách vai trò thất bại: ' + error?.error);
+        console.error('Error getting roles:', error);
       },
     });
+  }
+
+  createAccount() {
+    debugger;
+    // Chuyển hướng người dùng đến trang đăng ký (hoặc trang tạo tài khoản)
+    this.router.navigate(['/register']);
   }
 
   login() {
@@ -58,9 +73,30 @@ export class LoginComponent implements OnInit {
       next: (response: LoginResponse) => {
         debugger;
         const { token } = response;
-        this.tokenService.setToken(token);
-        // Xử lý kết quả trả về khi đăng nhập thành công
-        // this.router.navigate(['/home']);
+        if (this.rememberMe) {
+          this.tokenService.setToken(token);
+          debugger;
+          this.userService.getUserDetail(token).subscribe({
+            next: (response: any) => {
+              debugger;
+              this.userResponse = {
+                ...response,
+                date_of_birth: new Date(response.date_of_birth),
+              };
+              this.userService.saveUserResponseToLocalStorage(
+                this.userResponse,
+              );
+              this.router.navigate(['/']);
+            },
+            complete: () => {
+              debugger;
+            },
+            error: (error: any) => {
+              debugger;
+              alert(error.error.message);
+            },
+          });
+        }
       },
       complete: () => {
         debugger;

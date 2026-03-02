@@ -33,6 +33,7 @@ public class JwtTokenUtils {
         Map<String, Object> claims = new HashMap<>();
 //        this.generateSecretKey();
         claims.put("phoneNumber", user.getPhoneNumber());
+        claims.put("userId", user.getId());
         try {
             String token = Jwts.builder()
                     .setClaims(claims) // how to exreact claims from this ?
@@ -76,7 +77,7 @@ public class JwtTokenUtils {
     }
 
     //check expiration
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         Date expirationDate = this.extractClaim(token, Claims::getExpiration);
         return expirationDate.before(new Date());
     }
