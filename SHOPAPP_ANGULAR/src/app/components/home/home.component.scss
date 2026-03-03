@@ -1,3 +1,5 @@
+@import "../../styles/shared-styles.scss";
+
 .intro-section {
   text-align: center;
   color: #ffffff;
@@ -17,7 +19,7 @@
 
 .search-input {
   width: 300px;
-  background-color: rgb(19, 23, 42);
+  background-color: $shopapp-background-color;
   margin-right: 10px;
   border-color: rgba(255, 255, 255, 0.5);
   color: #ffffff;
@@ -46,12 +48,12 @@
 }
 
 .form-control option {
-  background-color: rgb(19, 23, 42);
+  background-color: $shopapp-background-color;
   color: #ffffff;
 }
 
 .product-item {
-  background-color: rgb(19, 23, 42);
+  background-color: $shopapp-background-color;
   border: 1px solid rgb(35, 39, 61);
   border-radius: 20px;
   padding: 20px;
@@ -73,7 +75,7 @@
 }
 
 .product-warranty {
-  color: rgb(242, 126, 212);
+  color: $shopapp-tint-color;
 }
 
 .product-price {
@@ -104,14 +106,14 @@
 }
 
 .page-number.active {
-  background-color: rgb(127, 68, 255) !important;
+  background-color: $shopapp-color !important;
   color: #fff;
-  border-color: rgb(127, 68, 255) !important;
+  border-color: $shopapp-color !important;
 }
 
 .btn-primary {
-  background-color: rgb(127, 68, 255);
-  border-color: rgb(127, 68, 255);
+  background-color: $shopapp-color;
+  border-color: $shopapp-color;
 }
 
 .btn.btn-primary {
