@@ -6,6 +6,8 @@ import { environment } from 'src/app/environments/environment';
 import { OrderDTO } from 'src/app/dtos/order/order.dto';
 import { OrderService } from 'src/app/service/order.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TokenService } from 'src/app/service/token.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-order',
@@ -35,10 +37,13 @@ export class OrderComponent implements OnInit {
     private cartService: CartService,
     private productService: ProductService,
     private orderService: OrderService,
-    private fb: FormBuilder,
+    private tokenService: TokenService,
+    private formBuilder: FormBuilder,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
   ) {
     // Tạo FormGroup và các FormControl tương ứng
-    this.orderForm = this.fb.group({
+    this.orderForm = this.formBuilder.group({
       fullname: ['hoàng xx', Validators.required], // fullname là FormControl bắt buộc
       email: ['hoang234@gmail.com', [Validators.email]], // Sử dụng Validators.email cho kiểm tra định dạng email
       phone_number: [
@@ -53,6 +58,9 @@ export class OrderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    debugger;
+    //this.cartService.clearCart();
+    this.orderData.user_id = this.tokenService.getUserId();
     // Lấy danh sách sản phẩm từ giỏ hàng
     debugger;
     const cart = this.cartService.getCart();
@@ -60,6 +68,9 @@ export class OrderComponent implements OnInit {
 
     // Gọi service để lấy thông tin sản phẩm dựa trên danh sách ID
     debugger;
+    if (productIds.length === 0) {
+      return;
+    }
     this.productService.getProductsByIds(productIds).subscribe({
       next: (products) => {
         debugger;
@@ -110,11 +121,14 @@ export class OrderComponent implements OnInit {
         product_id: cartItem.product.id,
         quantity: cartItem.quantity,
       }));
+      this.orderData.total_money = this.totalAmount;
       // Dữ liệu hợp lệ, bạn có thể gửi đơn hàng đi
       this.orderService.placeOrder(this.orderData).subscribe({
         next: (_response) => {
           debugger;
-          console.log('Đặt hàng thành công');
+          alert('Đặt hàng thành công');
+          this.cartService.clearCart();
+          this.router.navigate(['/']);
         },
         complete: () => {
           debugger;

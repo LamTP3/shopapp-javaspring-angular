@@ -14,6 +14,7 @@ import { TokenInterceptor } from './components/interceptors/token.interceptor';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { AppRoutingModule } from './app-routing.module';
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
+    NgbPopoverModule,
     AppRoutingModule,
   ],
   providers: [
