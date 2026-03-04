@@ -59,7 +59,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     // Tạo đối tượng xác thực để đặt vào SecurityContext
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(
-                                    userDetails,
+                                     userDetails,
                                     null,
                                     userDetails.getAuthorities()
                             );
@@ -68,10 +68,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
-            filterChain.doFilter(request, response); //enable by pass (cho mọi request đi qua)
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            return;
         }
+        filterChain.doFilter(request, response);
     }
 
     private boolean isBypassToken(@NotNull HttpServletRequest request) {

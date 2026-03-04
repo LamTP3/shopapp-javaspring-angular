@@ -12,6 +12,7 @@ import { TokenService } from 'src/app/service/token.service';
 export class HeaderComponent implements OnInit {
   userResponse?: UserResponse | null;
   isPopoverOpen = false;
+  activeNavItem: number = 0;
 
   togglePopover(event: Event): void {
     event.preventDefault();
@@ -33,7 +34,13 @@ export class HeaderComponent implements OnInit {
     private popoverConfig: NgbPopoverConfig,
     private tokenService: TokenService,
   ) {}
+
   ngOnInit() {
     this.userResponse = this.userService.getUserResponseFromLocalStorage();
+  }
+
+  setActiveNavItem(index: number) {
+    this.activeNavItem = index;
+    alert(this.activeNavItem);
   }
 }
