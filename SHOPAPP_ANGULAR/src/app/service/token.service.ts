@@ -9,8 +9,8 @@ export class TokenService {
   private jwtHelperService = new JwtHelperService();
   constructor() {}
 
-  getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+  getToken(): string {
+    return localStorage.getItem(this.TOKEN_KEY) ?? '';
   }
 
   setToken(token: string): void {

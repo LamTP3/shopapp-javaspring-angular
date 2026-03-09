@@ -7,6 +7,7 @@ import com.project.shopapp.dtos.UserLoginDTO;
 import com.project.shopapp.models.User;
 import com.project.shopapp.responses.LoginResponse;
 import com.project.shopapp.responses.RegisterResponse;
+import com.project.shopapp.responses.UpdateUserResponse;
 import com.project.shopapp.responses.UserResponse;
 import com.project.shopapp.services.IUserService;
 import com.project.shopapp.utils.MessageKeys;
@@ -99,7 +100,7 @@ public class UserController {
     }
 
     @PutMapping("/details/{userId}")
-    public ResponseEntity<UserResponse> updateUserDetails(
+    public ResponseEntity<UpdateUserResponse> updateUserDetails(
             @PathVariable Long userId,
             @RequestBody UpdateUserDTO updatedUserDTO,
             @RequestHeader("Authorization") String authorizationHeader
@@ -112,9 +113,16 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             User updatedUser = userService.updateUser(userId, updatedUserDTO);
-            return ResponseEntity.ok(UserResponse.fromUser(updatedUser));
+            return ResponseEntity.ok(UpdateUserResponse.builder()
+                    .message("Update user details successfully")
+                    .user(UserResponse.fromUser(updatedUser))
+                    .build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(
+                    UpdateUserResponse.builder()
+                            .message(e.getMessage())
+                            .build()
+            );
         }
     }
 }

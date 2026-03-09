@@ -7,6 +7,7 @@ import { DetailProductComponent } from './components/detail-product/detail-produ
 import { OrderComponent } from './components/order/order.component';
 import { OrderDetailComponent } from './components/order-detail/order-detail.component';
 import { AuthGuardFn } from './components/guards/auth.guard';
+import { UserProfileComponent } from './components/user-profile/user.profile.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -14,6 +15,11 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'products/:id', component: DetailProductComponent },
   { path: 'orders', component: OrderComponent, canActivate: [AuthGuardFn] },
+  {
+    path: 'user-profile',
+    component: UserProfileComponent,
+    canActivate: [AuthGuardFn],
+  },
   { path: 'orders/:id', component: OrderDetailComponent },
 ];
 

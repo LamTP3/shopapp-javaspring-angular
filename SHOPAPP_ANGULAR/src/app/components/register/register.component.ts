@@ -19,6 +19,9 @@ export class RegisterComponent {
   isAccepted: boolean;
   dateOfBirth: Date;
 
+  showPassword: boolean = false;
+  showRetypePassword: boolean = false;
+
   constructor(
     private router: Router,
     private userService: UserService,
@@ -97,5 +100,13 @@ export class RegisterComponent {
         this.registerForm.form.controls['dateOfBirth'].setErrors(null);
       }
     }
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleRetypePassword() {
+    this.showRetypePassword = !this.showRetypePassword;
   }
 }

@@ -18,6 +18,7 @@ export class LoginComponent implements OnInit {
   @ViewChild('loginForm') loginForm!: NgForm;
   phoneNumber: string = '33445566';
   password: string = '123456';
+  showPassword: boolean = false;
 
   roles: Role[] = [];
   rememberMe: boolean = true;
@@ -105,5 +106,9 @@ export class LoginComponent implements OnInit {
         alert(error?.error?.message);
       },
     });
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
   }
 }
